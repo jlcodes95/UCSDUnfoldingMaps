@@ -40,6 +40,10 @@ public class EarthquakeCityMap extends PApplet {
 	public static final float THRESHOLD_MODERATE = 5;
 	// Less than this threshold is a minor earthquake
 	public static final float THRESHOLD_LIGHT = 4;
+	
+	public static final float MINOR_MARKER_SIZE = 5.0f;
+	public static final float LIGHT_MARKER_SIZE = 10.0f;
+	public static final float MODERATE_MARKER_SIZE = 15.0f;
 
 	/** This is where to find the local tiles, for working without an Internet connection */
 	public static String mbTilesString = "blankLight-1-3.mbtiles";
@@ -127,14 +131,16 @@ public class EarthquakeCityMap extends PApplet {
 	    if (mag >= THRESHOLD_MODERATE) {
 	    	marker.setColor(red);
 	    	marker.setStrokeColor(red);
-	    }else if (mag <= THRESHOLD_LIGHT) {
-	    	marker.setColor(orange);
-	    	marker.setStrokeColor(orange);
-	    }else {
+	    	marker.setRadius(MODERATE_MARKER_SIZE);
+	    }else if (mag < THRESHOLD_LIGHT) {
 	    	marker.setColor(yellow);
 	    	marker.setStrokeColor(yellow);
+	    	marker.setRadius(MINOR_MARKER_SIZE);
+	    }else {
+	    	marker.setColor(orange);
+	    	marker.setStrokeColor(orange);
+	    	marker.setRadius(LIGHT_MARKER_SIZE);
 	    }
-	    
 	    
 	    // Finally return the marker
 	    return marker;
@@ -152,6 +158,30 @@ public class EarthquakeCityMap extends PApplet {
 	private void addKey() 
 	{	
 		// Remember you can use Processing's graphics methods here
+		int grey = color(216,216,216);
+		fill(grey);
+		rect(10, 50, 150, 300);
+		
+		int red = color(255, 0, 0);
+		fill(red);
+		ellipse(30, 120, MODERATE_MARKER_SIZE, MODERATE_MARKER_SIZE);
+		
+	    int orange = color(255, 165, 0);
+	    fill(orange);
+	    ellipse(30, 170, LIGHT_MARKER_SIZE, LIGHT_MARKER_SIZE);
+	    
+	    int yellow = color(255, 255, 0);
+	    fill(yellow);
+		ellipse(30, 220, MINOR_MARKER_SIZE, MINOR_MARKER_SIZE);
+		
+		int black = color(0, 0, 0);
+		textSize(16);
+		fill(black);
+		text("Earthquake", 40, 70);
+		textSize(12);
+		text("5.0+ Magnitude", 60, 120);
+		text("4.0+ Magnitude", 60, 170);
+		text("Below 4.0", 60, 220);
 	
 	}
 }
