@@ -15,6 +15,7 @@ import de.fhpotsdam.unfolding.marker.Marker;
 import de.fhpotsdam.unfolding.data.PointFeature;
 import de.fhpotsdam.unfolding.marker.SimplePointMarker;
 import de.fhpotsdam.unfolding.providers.Google;
+import de.fhpotsdam.unfolding.providers.Microsoft;
 import de.fhpotsdam.unfolding.providers.MBTilesMapProvider;
 import de.fhpotsdam.unfolding.utils.MapUtils;
 
@@ -58,7 +59,8 @@ public class EarthquakeCityMap extends PApplet {
 		    earthquakesURL = "2.5_week.atom"; 	// Same feed, saved Aug 7, 2015, for working offline
 		}
 		else {
-			map = new UnfoldingMap(this, 200, 50, 700, 500, new Google.GoogleMapProvider());
+//			map = new UnfoldingMap(this, 200, 50, 700, 500, new Google.GoogleMapProvider());
+			map = new UnfoldingMap(this, 200, 50, 700, 500, new Microsoft.RoadProvider());
 			// IF YOU WANT TO TEST WITH A LOCAL FILE, uncomment the next line
 			//earthquakesURL = "2.5_week.atom";
 		}
@@ -77,6 +79,10 @@ public class EarthquakeCityMap extends PApplet {
 	    // to create a new SimplePointMarker for each PointFeature in 
 	    // earthquakes.  Then add each new SimplePointMarker to the 
 	    // List markers (so that it will be added to the map in the line below)
+	    for (int i = 0; i < earthquakes.size(); i++) {
+	    	SimplePointMarker marker = createMarker(earthquakes.get(i)); 
+	    	markers.add(marker);
+	    }
 	    
 	    
 	    // Add the markers to the map so that they are displayed
@@ -107,6 +113,8 @@ public class EarthquakeCityMap extends PApplet {
 		
 		// Here is an example of how to use Processing's color method to generate 
 	    // an int that represents the color yellow.  
+	    int red = color(255, 0, 0);
+	    int orange = color(255, 165, 0);
 	    int yellow = color(255, 255, 0);
 		
 		// TODO (Step 4): Add code below to style the marker's size and color 
@@ -116,6 +124,16 @@ public class EarthquakeCityMap extends PApplet {
 	    // Rather than comparing the magnitude to a number directly, compare 
 	    // the magnitude to these variables (and change their value in the code 
 	    // above if you want to change what you mean by "moderate" and "light")
+	    if (mag >= THRESHOLD_MODERATE) {
+	    	marker.setColor(red);
+	    	marker.setStrokeColor(red);
+	    }else if (mag <= THRESHOLD_LIGHT) {
+	    	marker.setColor(orange);
+	    	marker.setStrokeColor(orange);
+	    }else {
+	    	marker.setColor(yellow);
+	    	marker.setStrokeColor(yellow);
+	    }
 	    
 	    
 	    // Finally return the marker
