@@ -1,7 +1,10 @@
 package module4;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import de.fhpotsdam.unfolding.UnfoldingMap;
 import de.fhpotsdam.unfolding.data.Feature;
@@ -35,7 +38,7 @@ public class EarthquakeCityMap extends PApplet {
 	private static final long serialVersionUID = 1L;
 
 	// IF YOU ARE WORKING OFFILINE, change the value of this variable to true
-	private static final boolean offline = false;
+	private static final boolean offline = true;
 	
 	/** This is where to find the local tiles, for working without an Internet connection */
 	public static String mbTilesString = "blankLight-1-3.mbtiles";
@@ -77,10 +80,10 @@ public class EarthquakeCityMap extends PApplet {
 		// FOR TESTING: Set earthquakesURL to be one of the testing files by uncommenting
 		// one of the lines below.  This will work whether you are online or offline
 		//earthquakesURL = "test1.atom";
-		//earthquakesURL = "test2.atom";
+//		earthquakesURL = "test2.atom";
 		
 		// WHEN TAKING THIS QUIZ: Uncomment the next line
-		//earthquakesURL = "quiz1.atom";
+		earthquakesURL = "quiz1.atom";
 		
 		
 		// (2) Reading in earthquake data and geometric properties
@@ -126,13 +129,13 @@ public class EarthquakeCityMap extends PApplet {
 		background(0);
 		map.draw();
 		addKey();
-		
 	}
 	
 	// helper method to draw key in GUI
 	// TODO: Update this method as appropriate
 	private void addKey() {	
 		// Remember you can use Processing's graphics methods here
+		
 		fill(255, 250, 240);
 		rect(25, 50, 150, 250);
 		
@@ -141,17 +144,28 @@ public class EarthquakeCityMap extends PApplet {
 		textSize(12);
 		text("Earthquake Key", 50, 75);
 		
+		fill(255, 0, 0);
+		triangle(50, 100, 60, 100, 55, 90);
+		
+		fill(255,255,255);
+		ellipse(55, 115, 10, 10);
+		rect(50, 130, 10, 10);
+		
 		fill(color(255, 0, 0));
-		ellipse(50, 125, 15, 15);
+		ellipse(55, 170, 10, 10);
 		fill(color(255, 255, 0));
-		ellipse(50, 175, 10, 10);
+		ellipse(55, 195, 10, 10);
 		fill(color(0, 0, 255));
-		ellipse(50, 225, 5, 5);
+		ellipse(55, 220, 10, 10);
 		
 		fill(0, 0, 0);
-		text("5.0+ Magnitude", 75, 125);
-		text("4.0+ Magnitude", 75, 175);
-		text("Below 4.0", 75, 225);
+		text("City Marker", 75, 95);
+		text("Land Quake", 75, 115);
+		text("Ocean Quake", 75, 135);
+		text("Size ~ Magnitude", 50, 150);
+		text("5.0+ Magnitude", 75, 170);
+		text("4.0+ Magnitude", 75, 195);
+		text("Below 4.0", 75, 220);
 	}
 
 	
@@ -170,7 +184,9 @@ public class EarthquakeCityMap extends PApplet {
 		// If isInCountry ever returns true, isLand should return true.
 		for (Marker m : countryMarkers) {
 			// TODO: Finish this method using the helper method isInCountry
-			
+			if (isInCountry(earthquake, m)) {
+				return true;
+			}
 		}
 		
 		
@@ -210,7 +226,30 @@ public class EarthquakeCityMap extends PApplet {
 		//  * If you know your Marker, m, is a LandQuakeMarker, then it has a "country" 
 		//      property set.  You can get the country with:
 		//        String country = (String)m.getProperty("country");
+		Map<String, Integer> map = new HashMap<String, Integer>();
+		for (Marker m: quakeMarkers) {
+			if(((EarthquakeMarker)m).isOnLand()) {
+				String country = (String)m.getProperty("country");
+				if (map.containsKey(country)){
+					map.put(country, map.get(country) + 1);
+				}else {
+					map.put(country, 1);
+				}
+			}else {
+				String ocean = "ocean";
+				if (map.containsKey(ocean)){
+					map.put(ocean, map.get(ocean) + 1);
+				}else {
+					map.put(ocean, 1);
+				}
+			}
+		}
 		
+		Iterator<String> iterator = map.keySet().iterator();
+		while(iterator.hasNext()) {
+			String key = iterator.next();
+			System.out.println(key + ": " + map.get(key));
+		}
 		
 	}
 	

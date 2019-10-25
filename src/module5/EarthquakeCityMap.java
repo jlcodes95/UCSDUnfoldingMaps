@@ -35,7 +35,7 @@ public class EarthquakeCityMap extends PApplet {
 	private static final long serialVersionUID = 1L;
 
 	// IF YOU ARE WORKING OFFILINE, change the value of this variable to true
-	private static final boolean offline = false;
+	private static final boolean offline = true;
 	
 	/** This is where to find the local tiles, for working without an Internet connection */
 	public static String mbTilesString = "blankLight-1-3.mbtiles";
@@ -146,6 +146,15 @@ public class EarthquakeCityMap extends PApplet {
 	private void selectMarkerIfHover(List<Marker> markers)
 	{
 		// TODO: Implement this method
+		if (lastSelected == null) {
+			for (Marker marker: markers) {
+				if (marker.isInside(map, mouseX, mouseY)) {
+					lastSelected = (CommonMarker) marker;
+					lastSelected.setSelected(true);
+					return;
+				}
+			}
+		}
 	}
 	
 	/** The event handler for mouse clicks
@@ -159,8 +168,47 @@ public class EarthquakeCityMap extends PApplet {
 		// TODO: Implement this method
 		// Hint: You probably want a helper method or two to keep this code
 		// from getting too long/disorganized
+		if (lastClicked != null) {
+			lastClicked.setClicked(false);
+			lastClicked = null;
+			unhideMarkers();
+			return;
+		}
+		lastClicked = lastSelected;
+		if (lastClicked instanceof CityMarker) {
+			lastClicked.setClicked(true);
+			//hide earthquake that does not affect city
+			for(Marker marker: quakeMarkers) {
+				double radius = ((EarthquakeMarker) marker).threatCircle();
+				if (lastClicked.getDistanceTo(marker.getLocation()) > radius){
+					marker.setHidden(true);
+				}
+			}
+			
+			//hide all other cities
+			for (Marker marker: cityMarkers) {
+				if (marker != lastClicked) {
+					marker.setHidden(true);
+				}
+			}
+		}else if (lastClicked instanceof EarthquakeMarker) {
+			double radius = ((EarthquakeMarker) lastClicked).threatCircle();
+			lastClicked.setClicked(true);
+			//hide earthquake not in range of lastClicked
+			for(Marker marker: quakeMarkers) {
+				if (lastClicked != marker) {
+					marker.setHidden(true);
+				}
+			}
+			
+			//hide city not in range of lastClicked
+			for (Marker marker: cityMarkers) {
+				if (lastClicked.getDistanceTo(marker.getLocation()) > radius) {
+					marker.setHidden(true);
+				}
+			}
+		}
 	}
-	
 	
 	// loop over and unhide all markers
 	private void unhideMarkers() {
